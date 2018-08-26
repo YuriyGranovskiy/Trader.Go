@@ -1,7 +1,6 @@
 package trade
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -15,24 +14,15 @@ type OrderInfoResponse struct {
 	Error   string `json:"error"`
 }
 
-func GetOrderInfo(orderId int) OrderInfoResponse {
-	proxyUrl, err := url.Parse("http://127.0.0.1:8888")
+func GetOrderInfo(orderId int, getRequest func(string, string, []byte) *http.Request) OrderInfoResponse {
+	proxyUrl, _ := url.Parse("http://127.0.0.1:8888")
 	httpClient := http.Client{Transport: &http.Transport{Proxy: http.ProxyURL(proxyUrl)}}
 	nonce := 2
 	requestBody := fmt.Sprintf("method=OrderInfo&nonce=%d&order_id=%d", nonce, orderId)
-	data := []byte(requestBody)
-	r := bytes.NewReader(data)
 
-	req, err := http.NewRequest(http.MethodPost, tradeApiUri, r)
-	if err != nil {
-		log.Fatal(err)
-	}
+	request := getRequest(tradeApiUri, http.MethodPost, []byte(requestBody))
 
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("Key", AuthKey)
-	req.Header.Set("Sign", computeHmac512(requestBody, AuthSecret))
-
-	res, getErr := httpClient.Do(req)
+	res, getErr := httpClient.Do(request)
 	if getErr != nil {
 		log.Fatal(getErr)
 	}

@@ -1,7 +1,6 @@
 package trade
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -15,24 +14,14 @@ type ActiveOrdersResponse struct {
 	Error   string `json:"error"`
 }
 
-func GetActiveOrdersByPair(pairName string) ActiveOrdersResponse {
-	proxyUrl, err := url.Parse("http://127.0.0.1:8888")
+func GetActiveOrdersByPair(pairName string, getRequest func(string, string, []byte) *http.Request) ActiveOrdersResponse {
+	proxyUrl, _ := url.Parse("http://127.0.0.1:8888")
 	httpClient := http.Client{Transport: &http.Transport{Proxy: http.ProxyURL(proxyUrl)}}
-	nonce := 2
+	nonce := 6
 	requestBody := fmt.Sprintf("method=ActiveOrders&nonce=%d&pair=%s", nonce, pairName)
-	data := []byte(requestBody)
-	r := bytes.NewReader(data)
+	request := getRequest(tradeApiUri, http.MethodPost, []byte(requestBody))
 
-	req, err := http.NewRequest(http.MethodPost, tradeApiUri, r)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("Key", AuthKey)
-	req.Header.Set("Sign", computeHmac512(requestBody, AuthSecret))
-
-	res, getErr := httpClient.Do(req)
+	res, getErr := httpClient.Do(request)
 	if getErr != nil {
 		log.Fatal(getErr)
 	}

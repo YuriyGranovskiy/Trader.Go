@@ -1,7 +1,6 @@
 package trade
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -26,24 +25,15 @@ type TradeHistoryReturn struct {
 	Timestamp   int     `json:"timestamp"`
 }
 
-func GetTradeHistory() TradeHistoryResponse {
-	proxyUrl, err := url.Parse("http://127.0.0.1:8888")
+func GetTradeHistory(getRequest func(string, string, []byte) *http.Request) TradeHistoryResponse {
+	proxyUrl, _ := url.Parse("http://127.0.0.1:8888")
 	httpClient := http.Client{Transport: &http.Transport{Proxy: http.ProxyURL(proxyUrl)}}
-	nonce := 3
+	nonce := 7
 	requestBody := fmt.Sprintf("method=TradeHistory&nonce=%d&pair=btc_usd", nonce)
-	data := []byte(requestBody)
-	r := bytes.NewReader(data)
 
-	req, err := http.NewRequest(http.MethodPost, tradeApiUri, r)
-	if err != nil {
-		log.Fatal(err)
-	}
+	request := getRequest(tradeApiUri, http.MethodPost, []byte(requestBody))
 
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("Key", AuthKey)
-	req.Header.Set("Sign", computeHmac512(requestBody, AuthSecret))
-
-	res, getErr := httpClient.Do(req)
+	res, getErr := httpClient.Do(request)
 	if getErr != nil {
 		log.Fatal(getErr)
 	}
