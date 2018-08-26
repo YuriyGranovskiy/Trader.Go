@@ -32,7 +32,7 @@ type InfoPermissions struct {
 }
 
 func GetInfo() InfoResponse {
-	httpClient := http.Client{}
+	httpClient := CreateHttpClient()
 
 	req, err := http.NewRequest(http.MethodGet, tradeApiUri, nil)
 	if err != nil {

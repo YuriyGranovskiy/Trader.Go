@@ -9,10 +9,7 @@ import (
 	"net/http"
 )
 
-const AuthKey = ""
-const AuthSecret = ""
-
-func GetAuthenticatedRequest(uri string, method string, requestBody []byte) *http.Request {
+func GetAuthenticatedRequest(uri string, method string, requestBody []byte, key string, secret string) *http.Request {
 	reader := bytes.NewReader(requestBody)
 
 	req, err := http.NewRequest(method, uri, reader)
@@ -21,8 +18,8 @@ func GetAuthenticatedRequest(uri string, method string, requestBody []byte) *htt
 	}
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("Key", AuthKey)
-	req.Header.Set("Sign", computeHmac512(requestBody, AuthSecret))
+	req.Header.Set("Key", key)
+	req.Header.Set("Sign", computeHmac512(requestBody, secret))
 
 	return req
 }

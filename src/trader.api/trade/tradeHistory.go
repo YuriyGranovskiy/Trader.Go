@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"net/url"
 )
 
 type TradeHistoryResponse struct {
@@ -26,9 +25,8 @@ type TradeHistoryReturn struct {
 }
 
 func GetTradeHistory(getRequest func(string, string, []byte) *http.Request) TradeHistoryResponse {
-	proxyUrl, _ := url.Parse("http://127.0.0.1:8888")
-	httpClient := http.Client{Transport: &http.Transport{Proxy: http.ProxyURL(proxyUrl)}}
-	nonce := 7
+	httpClient := CreateHttpClient()
+	nonce := 9
 	requestBody := fmt.Sprintf("method=TradeHistory&nonce=%d&pair=btc_usd", nonce)
 
 	request := getRequest(tradeApiUri, http.MethodPost, []byte(requestBody))

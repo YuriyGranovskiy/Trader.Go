@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"net/url"
 )
 
 type ActiveOrdersResponse struct {
@@ -15,9 +14,8 @@ type ActiveOrdersResponse struct {
 }
 
 func GetActiveOrdersByPair(pairName string, getRequest func(string, string, []byte) *http.Request) ActiveOrdersResponse {
-	proxyUrl, _ := url.Parse("http://127.0.0.1:8888")
-	httpClient := http.Client{Transport: &http.Transport{Proxy: http.ProxyURL(proxyUrl)}}
-	nonce := 6
+	httpClient := CreateHttpClient()
+	nonce := 8
 	requestBody := fmt.Sprintf("method=ActiveOrders&nonce=%d&pair=%s", nonce, pairName)
 	request := getRequest(tradeApiUri, http.MethodPost, []byte(requestBody))
 

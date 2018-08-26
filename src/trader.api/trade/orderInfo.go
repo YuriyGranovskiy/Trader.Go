@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"net/url"
 )
 
 type OrderInfoResponse struct {
@@ -15,8 +14,7 @@ type OrderInfoResponse struct {
 }
 
 func GetOrderInfo(orderId int, getRequest func(string, string, []byte) *http.Request) OrderInfoResponse {
-	proxyUrl, _ := url.Parse("http://127.0.0.1:8888")
-	httpClient := http.Client{Transport: &http.Transport{Proxy: http.ProxyURL(proxyUrl)}}
+	httpClient := CreateHttpClient()
 	nonce := 2
 	requestBody := fmt.Sprintf("method=OrderInfo&nonce=%d&order_id=%d", nonce, orderId)
 
