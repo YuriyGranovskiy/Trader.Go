@@ -24,9 +24,9 @@ type TradeHistoryReturn struct {
 	Timestamp   int     `json:"timestamp"`
 }
 
-func GetTradeHistory(getRequest func(string, string, []byte) *http.Request) TradeHistoryResponse {
+func GetTradeHistory(getRequest func(string, string, []byte) *http.Request, getNonce func() int) TradeHistoryResponse {
 	httpClient := CreateHttpClient()
-	nonce := 9
+	nonce := getNonce()
 	requestBody := fmt.Sprintf("method=TradeHistory&nonce=%d&pair=btc_usd", nonce)
 
 	request := getRequest(tradeApiUri, http.MethodPost, []byte(requestBody))

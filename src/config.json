@@ -1,0 +1,5 @@
+{
+    "keyFile": "%APPDATA%\\Trader\\keys",
+    "nonceFile": "%APPDATA%\\Trader\\nonce",
+    "pairName": "btc_usd"
+}

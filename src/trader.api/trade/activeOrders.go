@@ -13,9 +13,9 @@ type ActiveOrdersResponse struct {
 	Error   string `json:"error"`
 }
 
-func GetActiveOrdersByPair(pairName string, getRequest func(string, string, []byte) *http.Request) ActiveOrdersResponse {
+func GetActiveOrdersByPair(pairName string, getRequest func(string, string, []byte) *http.Request, getNonce func() int) ActiveOrdersResponse {
 	httpClient := CreateHttpClient()
-	nonce := 8
+	nonce := getNonce()
 	requestBody := fmt.Sprintf("method=ActiveOrders&nonce=%d&pair=%s", nonce, pairName)
 	request := getRequest(tradeApiUri, http.MethodPost, []byte(requestBody))
 
