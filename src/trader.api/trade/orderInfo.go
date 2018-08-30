@@ -1,10 +1,7 @@
 package trade
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -20,21 +17,9 @@ func GetOrderInfo(orderId int, getRequest func(string, string, []byte) *http.Req
 
 	request := getRequest(tradeApiUri, http.MethodPost, []byte(requestBody))
 
-	res, getErr := httpClient.Do(request)
-	if getErr != nil {
-		log.Fatal(getErr)
-	}
-
-	body, readErr := ioutil.ReadAll(res.Body)
-	if readErr != nil {
-		log.Fatal(readErr)
-	}
-
 	orderInfoResponse := OrderInfoResponse{}
-	jsonErr := json.Unmarshal(body, &orderInfoResponse)
-	if jsonErr != nil {
-		log.Fatal(jsonErr)
-	}
+
+	ExecuteTradeRequest(httpClient, request, &orderInfoResponse)
 
 	return orderInfoResponse
 }

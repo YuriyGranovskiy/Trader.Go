@@ -1,10 +1,7 @@
 package trade
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -27,21 +24,9 @@ func Trade(pairName string, tradeType string, rate float32, amount float32, getR
 	requestBody := fmt.Sprintf("method=Trade&nonce=%d&pair=%s&type=%s&rate=%g&amount=%g", nonce, pairName, tradeType, rate, amount)
 	request := getRequest(tradeApiUri, http.MethodPost, []byte(requestBody))
 
-	res, getErr := httpClient.Do(request)
-	if getErr != nil {
-		log.Fatal(getErr)
-	}
-
-	body, readErr := ioutil.ReadAll(res.Body)
-	if readErr != nil {
-		log.Fatal(readErr)
-	}
-
 	tradeResponse := TradeResponse{}
-	jsonErr := json.Unmarshal(body, &tradeResponse)
-	if jsonErr != nil {
-		log.Fatal(jsonErr)
-	}
+
+	ExecuteTradeRequest(httpClient, request, &tradeResponse)
 
 	return tradeResponse
 }

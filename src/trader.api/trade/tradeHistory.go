@@ -1,10 +1,7 @@
 package trade
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -31,21 +28,9 @@ func GetTradeHistory(getRequest func(string, string, []byte) *http.Request, getN
 
 	request := getRequest(tradeApiUri, http.MethodPost, []byte(requestBody))
 
-	res, getErr := httpClient.Do(request)
-	if getErr != nil {
-		log.Fatal(getErr)
-	}
-
-	body, readErr := ioutil.ReadAll(res.Body)
-	if readErr != nil {
-		log.Fatal(readErr)
-	}
-
 	tradeHistoryResponse := TradeHistoryResponse{}
-	jsonErr := json.Unmarshal(body, &tradeHistoryResponse)
-	if jsonErr != nil {
-		log.Fatal(jsonErr)
-	}
+
+	ExecuteTradeRequest(httpClient, request, &tradeHistoryResponse)
 
 	return tradeHistoryResponse
 }

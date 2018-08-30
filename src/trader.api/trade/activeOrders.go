@@ -1,10 +1,7 @@
 package trade
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -29,21 +26,9 @@ func GetActiveOrdersByPair(pairName string, getRequest func(string, string, []by
 	requestBody := fmt.Sprintf("method=ActiveOrders&nonce=%d&pair=%s", nonce, pairName)
 	request := getRequest(tradeApiUri, http.MethodPost, []byte(requestBody))
 
-	res, getErr := httpClient.Do(request)
-	if getErr != nil {
-		log.Fatal(getErr)
-	}
-
-	body, readErr := ioutil.ReadAll(res.Body)
-	if readErr != nil {
-		log.Fatal(readErr)
-	}
-
 	activeOrdersResponse := ActiveOrdersResponse{}
-	jsonErr := json.Unmarshal(body, &activeOrdersResponse)
-	if jsonErr != nil {
-		log.Fatal(jsonErr)
-	}
+
+	ExecuteTradeRequest(httpClient, request, &activeOrdersResponse)
 
 	return activeOrdersResponse
 }

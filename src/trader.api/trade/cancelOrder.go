@@ -1,10 +1,7 @@
 package trade
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -25,21 +22,9 @@ func CancelOrder(orderId int, getRequest func(string, string, []byte) *http.Requ
 	requestBody := fmt.Sprintf("method=CancelOrder&nonce=%d&order_id=%d", nonce, orderId)
 	request := getRequest(tradeApiUri, http.MethodPost, []byte(requestBody))
 
-	res, getErr := httpClient.Do(request)
-	if getErr != nil {
-		log.Fatal(getErr)
-	}
-
-	body, readErr := ioutil.ReadAll(res.Body)
-	if readErr != nil {
-		log.Fatal(readErr)
-	}
-
 	cancelOrderResponse := CancelOrderResponse{}
-	jsonErr := json.Unmarshal(body, &cancelOrderResponse)
-	if jsonErr != nil {
-		log.Fatal(jsonErr)
-	}
+
+	ExecuteTradeRequest(httpClient, request, &cancelOrderResponse)
 
 	return cancelOrderResponse
 }
