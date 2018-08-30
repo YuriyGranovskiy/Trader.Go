@@ -11,7 +11,6 @@ import (
 	"strconv"
 	"strings"
 
-	"trader.api/public"
 	"trader.api/trade"
 )
 
@@ -26,18 +25,26 @@ var nonce int
 func main() {
 	config := loadConfiguration("config.json")
 	nonce = getNonceFromFile(normalizePath(config.NonceFilePath))
-	infoResponse := public.GetInfo()
+	/*infoResponse := public.GetInfo()
 	fmt.Println(infoResponse.Pairs[config.PairName])
 	depthResponse := public.GetDepthByPair(config.PairName)
-	fmt.Println(depthResponse[config.PairName])
-	activeOrdersResponse := trade.GetActiveOrdersByPair(config.PairName, requestFactory(normalizePath(config.KeyFilePath)), func() int {
+	fmt.Println(depthResponse[config.PairName])*/
+
+	getNonceFunction := func() int {
 		return getNonce(normalizePath(config.NonceFilePath))
-	})
+	}
+
+	getRequestFunction := requestFactory(normalizePath(config.KeyFilePath))
+
+	tradeResponse := trade.Trade(config.PairName, "buy", 8600, 0.001, getRequestFunction, getNonceFunction)
+	fmt.Println(tradeResponse)
+	order_id := tradeResponse.Return.OrderId
+	activeOrdersResponse := trade.GetActiveOrdersByPair(config.PairName, getRequestFunction, getNonceFunction)
 	fmt.Println(activeOrdersResponse)
-	tradeHistoryResponse := trade.GetTradeHistory(requestFactory(normalizePath(config.KeyFilePath)), func() int {
-		return getNonce(normalizePath(config.NonceFilePath))
-	})
+	tradeHistoryResponse := trade.GetTradeHistory(getRequestFunction, getNonceFunction)
 	fmt.Println(tradeHistoryResponse)
+	canсelOrderResponse := trade.CancelOrder(order_id, getRequestFunction, getNonceFunction)
+	fmt.Println(canсelOrderResponse)
 }
 
 func loadConfiguration(configFilePath string) Config {

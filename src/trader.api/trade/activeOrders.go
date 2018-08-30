@@ -9,8 +9,18 @@ import (
 )
 
 type ActiveOrdersResponse struct {
-	Success int    `json:"success"`
-	Error   string `json:"error"`
+	Success int                 `json:"success"`
+	Error   string              `json:"error"`
+	Return  map[int]ActiveOrder `json:"return"`
+}
+
+type ActiveOrder struct {
+	Pair      string  `json:"pair"`
+	OrderType string  `json:"type"`
+	Amount    float32 `json:"amount"`
+	Rate      float32 `json:"rate"`
+	Timestamp int     `json:"timestamp_created"`
+	Status    int     `json:"status"`
 }
 
 func GetActiveOrdersByPair(pairName string, getRequest func(string, string, []byte) *http.Request, getNonce func() int) ActiveOrdersResponse {
