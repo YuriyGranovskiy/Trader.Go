@@ -1,0 +1,28 @@
+<html>
+    <script  src="https://js.pusher.com/4.3/pusher.min.js"></script>
+    <script>
+        Pusher.log = function( msg ) {
+            console.log(msg);
+        };
+
+        var pusher = new Pusher('ee987526a24ba107824c', {
+            cluster: 'eu'
+        });
+
+        console.log("Pusher created")
+
+        var channel = pusher.subscribe('btc_usd.trades');
+
+        console.log("Subscribed to channel")
+
+
+        channel.bind('trades', function (data) {
+            console.log(data.message);
+        });
+
+        console.log("code finished")
+    </script>
+    <body>
+
+    </body>
+</html>
